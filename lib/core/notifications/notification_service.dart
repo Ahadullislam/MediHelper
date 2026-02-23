@@ -1,87 +1,50 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
-  static final NotificationService _instance = NotificationService._internal();
-  factory NotificationService() => _instance;
-  NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _plugin =
+  FlutterLocalNotificationsPlugin();
 
-  Future<void> initNotifications() async {
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+  static Future init() async {
 
-    const InitializationSettings settings =
-        InitializationSettings(android: androidSettings);
+    tz.initializeTimeZones();
 
-    await _notificationsPlugin.initialize(settings);
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const settings = InitializationSettings(
+      android: android,
+    );
+
+    await _plugin.initialize(settings);
   }
 
-  Future<void> showNotification({
+  static Future scheduleMedicineNotification({
     required int id,
     required String title,
     required String body,
-    String? payload,
+    required DateTime dateTime,
   }) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-      'medihelper_channel',
-      'MediHelper Notifications',
-      channelDescription: 'Notifications for medicine reminders and appointments',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
 
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidDetails);
-
-    await _notificationsPlugin.show(
+    await _plugin.zonedSchedule(
       id,
       title,
       body,
-      notificationDetails,
-      payload: payload,
-    );
-  }
-
-  Future<void> cancelNotification(int id) async {
-    await _notificationsPlugin.cancel(id);
-  }
-
-  Future<void> cancelAllNotifications() async {
-    await _notificationsPlugin.cancelAll();
-  }
-
-  Future<void> scheduleNotification({
-    required int id,
-    required String title,
-    required String body,
-    required DateTime scheduledTime,
-    String? payload,
-  }) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-      'medihelper_channel',
-      'MediHelper Notifications',
-      channelDescription: 'Notifications for medicine reminders and appointments',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidDetails);
-
-    await _notificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime.from(scheduledTime, tz.local),
-      notificationDetails,
+      tz.TZDateTime.from(dateTime, tz.local),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'med_channel',
+          'Medicine Reminder',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      payload: payload,
+      UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
+
 }

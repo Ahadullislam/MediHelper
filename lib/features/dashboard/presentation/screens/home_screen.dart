@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../appointment/presentation/screens/add_appointment_screen.dart';
 import '../../../family/data/models/family_member_model.dart';
 import '../../../family/presentation/cubit/family_cubit.dart';
 import '../../../family/presentation/screens/add_family_screen.dart';
@@ -39,27 +40,56 @@ class HomeScreen extends StatelessWidget {
           );
         },
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   child: const Icon(Icons.add),
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (_) => const AddFamilyScreen(),
-      //       ),
-      //     );
-      //   },
-      // ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const AddMedicineScreen(),
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
+
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+
+          //Add Family Member
+          FloatingActionButton(
+            heroTag: "Add Family",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AddFamilyScreen(),
+                ),
+              );
+            },
+            child: const Icon(Icons.family_restroom),
+          ),
+          const SizedBox(height: 12),
+
+          //Add Medicine
+          FloatingActionButton(
+            heroTag: "medicine",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AddMedicineScreen(),
+                ),
+              );
+            },
+            child: const Icon(Icons.medical_services),
+          ),
+          const SizedBox(height: 12),
+
+          //Add Appointment
+          FloatingActionButton(
+            heroTag: "appointment",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AddAppointmentScreen(),
+                ),
+              );
+            },
+            child: const Icon(Icons.event),
+          ),
+
+        ],
       ),
     );
   }
